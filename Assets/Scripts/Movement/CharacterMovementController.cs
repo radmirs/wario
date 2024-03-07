@@ -11,6 +11,8 @@ namespace wario.Movement
         private float _speed = 1f;
         [SerializeField]
         private float _maxRadiansDelta = 10f;
+        [SerializeField]
+        private float _boost = 2f;
         public Vector3 MovementDirection {get; set; }
         public Vector3 LookDirection {get; set; }
         
@@ -33,8 +35,16 @@ namespace wario.Movement
 
         private void Translate()
         {
-            var delta = MovementDirection * _speed * Time.deltaTime;
-            _characterController.Move(delta);
+            if (Input.GetKey(KeyCode.Space))
+            {
+               var delta = MovementDirection * _speed * _boost * Time.deltaTime;
+                _characterController.Move(delta); 
+            }
+            else
+            {
+                var delta = MovementDirection * _speed * Time.deltaTime;
+                _characterController.Move(delta);
+            } 
         }
 
         private void Rotate()
