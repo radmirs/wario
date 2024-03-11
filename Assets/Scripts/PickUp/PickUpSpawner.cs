@@ -12,9 +12,27 @@ namespace wario.PickUp
         [SerializeField]
         private int _maxCount = 2;
         [SerializeField]
+        private float _minSpawnIntervalSeconds = 9f;
+        [SerializeField]
+        private float _maxSpawnIntervalSeconds = 11f;
+        [SerializeField]
         private float _spawnIntervalSeconds = 10f;
         private float _currentSpawnTimerSeconds;
         private int _currentCount;
+
+        protected void Start()
+        {
+            if (_minSpawnIntervalSeconds > _maxSpawnIntervalSeconds)
+            {
+                Debug.Log("Minimal spawn interval should be less than maximal spawn interval. Values have been swaped.");
+                float b = _minSpawnIntervalSeconds;
+                _minSpawnIntervalSeconds = _maxSpawnIntervalSeconds;
+                _maxSpawnIntervalSeconds = b;
+            }
+
+            _spawnIntervalSeconds = Random.Range(_minSpawnIntervalSeconds, _maxSpawnIntervalSeconds);
+
+        }
 
         protected void Update()
         {
@@ -25,6 +43,7 @@ namespace wario.PickUp
                 {
                     _currentSpawnTimerSeconds = 0f;
                     _currentCount++;
+                    _spawnIntervalSeconds = Random.Range(_minSpawnIntervalSeconds, _maxSpawnIntervalSeconds);
 
                     var randomPointInsideRange = Random.insideUnitCircle * _range;
                     var randomPosition = new Vector3(randomPointInsideRange.x, 0f, randomPointInsideRange.y) + transform.position;
