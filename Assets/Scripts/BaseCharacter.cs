@@ -1,11 +1,13 @@
 using UnityEngine;
 using wario.Movement;
 using wario.Shooting;
+using wario.PickUp;
+using System;
 
 namespace wario
 {
     [RequireComponent(typeof(CharacterMovementController), typeof(ShootingController))]
-    public class BaseCharacter : MonoBehaviour
+    public abstract class BaseCharacter : MonoBehaviour
     {
         [SerializeField]
         private Weapon _baseWeaponPrefab;
@@ -16,6 +18,7 @@ namespace wario
         private IMovementDirectionSource _movementDirectionSource;
         private CharacterMovementController _characterMovementController;
         private ShootingController _shootingController;
+        
         protected void Awake()
         {
             _movementDirectionSource = GetComponent<IMovementDirectionSource>();
@@ -26,7 +29,7 @@ namespace wario
 
         protected void Start()
         {
-            _shootingController.SetWeapon(_baseWeaponPrefab, _hand);
+            SetWeapon(_baseWeaponPrefab);
         }
 
         protected void Update()
@@ -55,6 +58,34 @@ namespace wario
                 _health -= bullet.Damage;
 
                 Destroy(other.gameObject);
+            }
+            else if (LayerUtils.IsPickUpWeapon(other.gameObject))
+            {
+                var pickUp = other.gameObject.GetComponent<PickUpWeapon>();   
+                pickUp.PickUp(this);
+
+                Destroy(other.gameObject);
+            }
+            else if (LayerUtils.IsPickUpBooster(other.gameObject))
+            {
+                var pickUp = other.gameObject.GetComponent<PickUpBooster>();  
+                pickUp.PickUp(this);
+
+                Destroy(other.gameObject);
+            }
+
+        }
+
+        public void SetWeapon(Weapon weapon)
+        {
+            _shootingController.SetWeapon(weapon, _hand);
+        }
+
+        public void SetBuff(string type, float buffTime, float buffMultiplier)
+        {
+            if (type == "speed")
+            {
+                _characterMovementController.SetBuffSpeed(buffTime, buffMultiplier);
             }
         }
 
