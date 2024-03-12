@@ -13,8 +13,14 @@ namespace wario.Movement
         private float _maxRadiansDelta = 10f;
         [SerializeField]
         private float _boost = 2f;
+        private float _currentBuffTimerSeconds = 0f;
+        private float _buffDurationSeconds = 0f;
+        private float _buffSpeedMultiplier = 1f;
+        private bool IsSpeedBuffed = false;
+
         public Vector3 MovementDirection {get; set; }
         public Vector3 LookDirection {get; set; }
+        public bool IsBoosted {get ; set; }
         
         private CharacterController _characterController;
         
@@ -31,20 +37,30 @@ namespace wario.Movement
             {
                 Rotate();
             }
+
+            if (IsSpeedBuffed)
+            {
+                _currentBuffTimerSeconds += Time.deltaTime;
+                if (_currentBuffTimerSeconds > _buffDurationSeconds)
+                    {
+                        _buffSpeedMultiplier = 1f;
+                        _currentBuffTimerSeconds = 0f;
+                        _buffDurationSeconds = 0f;
+                        IsSpeedBuffed = false;
+                    }
+
+            }
+            
         }
 
         private void Translate()
         {
-            if (Input.GetKey(KeyCode.Space))
+            var delta = MovementDirection * _speed * _buffSpeedMultiplier * Time.deltaTime;
+            if (IsBoosted)
             {
-               var delta = MovementDirection * _speed * _boost * Time.deltaTime;
-                _characterController.Move(delta); 
+               delta *= _boost;
             }
-            else
-            {
-                var delta = MovementDirection * _speed * Time.deltaTime;
-                _characterController.Move(delta);
-            } 
+            _characterController.Move(delta); 
         }
 
         private void Rotate()
@@ -61,6 +77,14 @@ namespace wario.Movement
                 
                 transform.rotation = newRotation;
             }
+        }
+
+        public void SetBuffSpeed(float buffTime, float buffMultiplier)
+        {
+            _buffSpeedMultiplier = buffMultiplier;
+            _buffDurationSeconds = buffTime;
+            _currentBuffTimerSeconds = 0f;
+            IsSpeedBuffed = true;
         }
     }
 }

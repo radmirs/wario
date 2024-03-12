@@ -11,5 +11,6 @@ namespace wario.PickUp
        {
         OnPickedUp?.Invoke(this);
        }
+
     }
 }
