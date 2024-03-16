@@ -1,9 +1,8 @@
 using UnityEngine;
-using wario.Movement;
 
-namespace wario
+namespace wario.Enemy
 {
-    [RequireComponent(typeof(DummyDirectionController))]
+    [RequireComponent(typeof(EnemyDirectionController), typeof(EnemyAiController) )]
     public class EnemyCharacter : BaseCharacter
     {
         
