@@ -13,6 +13,7 @@ namespace wario.Enemy.States
         public MoveForwardState(EnemyTarget target, EnemyDirectionController enemyDirectionController)
         {
             _target = target;
+            _enemyDirectionController = enemyDirectionController;
         }
         public override void Execute()
         {
