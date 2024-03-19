@@ -1,5 +1,5 @@
 using UnityEngine;
-using wario.Shooting;
+using wario.Buff;
 
 namespace wario.PickUp
 {
@@ -13,7 +13,7 @@ namespace wario.PickUp
        public override void PickUp(BaseCharacter character)
        {
         base.PickUp(character);
-        character.SetBuff("speed", _boostTimeSeconds, _speedMultiplier);
+        character.SetBuff(new SpeedBuff(_boostTimeSeconds, _speedMultiplier, character));
        }
     }
 }

@@ -2,7 +2,9 @@ using UnityEngine;
 using wario.Movement;
 using wario.Shooting;
 using wario.PickUp;
+using wario.Buff;
 using System;
+using System.Collections.Generic;
 
 namespace wario
 {
@@ -18,7 +20,13 @@ namespace wario
         private IMovementDirectionSource _movementDirectionSource;
         private CharacterMovementController _characterMovementController;
         private ShootingController _shootingController;
-        
+        public bool IsBoosted {get ; set; }
+
+        private List<BaseBuff> _buffList = new List<BaseBuff>();
+        private List<BaseBuff> _buffListRemoveQueue = new List<BaseBuff>();
+        private List<BaseBuff> _buffListAddQueue = new List<BaseBuff>();
+
+
         protected void Awake()
         {
             _movementDirectionSource = GetComponent<IMovementDirectionSource>();
@@ -44,6 +52,25 @@ namespace wario
             _characterMovementController.MovementDirection = direction;
             _characterMovementController.LookDirection = lookDirection;
 
+            foreach(BaseBuff buff in _buffListRemoveQueue)
+            {
+                buff.OnRemoval();
+                _buffList.Remove(buff);
+            }
+            foreach(BaseBuff buff in _buffListAddQueue)
+            {
+                _buffList.Add(buff);
+                buff.OnAddition();
+            }
+            foreach(BaseBuff buff in _buffList)
+            {
+                buff.TimerIncrement(Time.deltaTime);
+                buff.Execute();
+            }
+            
+            _buffListAddQueue.Clear();
+            _buffListRemoveQueue.Clear();
+
             if (_health <= 0f)
             {
                 Destroy(gameObject);
@@ -59,16 +86,9 @@ namespace wario
 
                 Destroy(other.gameObject);
             }
-            else if (LayerUtils.IsPickUpWeapon(other.gameObject))
+            else if (LayerUtils.IsPickUp(other.gameObject))
             {
-                var pickUp = other.gameObject.GetComponent<PickUpWeapon>();   
-                pickUp.PickUp(this);
-
-                Destroy(other.gameObject);
-            }
-            else if (LayerUtils.IsPickUpBooster(other.gameObject))
-            {
-                var pickUp = other.gameObject.GetComponent<PickUpBooster>();  
+                var pickUp = other.gameObject.GetComponent<PickUpItem>();   
                 pickUp.PickUp(this);
 
                 Destroy(other.gameObject);
@@ -80,13 +100,23 @@ namespace wario
         {
             _shootingController.SetWeapon(weapon, _hand);
         }
-
-        public void SetBuff(string type, float buffTime, float buffMultiplier)
+        
+        public void SetBuff(BaseBuff buff)
         {
-            if (type == "speed")
+            foreach(BaseBuff item in _buffList)
             {
-                _characterMovementController.SetBuffSpeed(buffTime, buffMultiplier);
+                if (item.bufftype == buff.bufftype)
+                {
+                    _buffListRemoveQueue.Add(item);
+                }
             }
+
+            _buffListAddQueue.Add(buff);
+        }
+
+        public void RemoveBuff(BaseBuff buff)
+        {
+            _buffListRemoveQueue.Add(buff);
         }
 
     }

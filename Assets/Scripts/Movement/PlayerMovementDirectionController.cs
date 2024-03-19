@@ -5,14 +5,14 @@ namespace wario.Movement
     public class PlayerMovementDirectionController : MonoBehaviour, IMovementDirectionSource
     {
         private UnityEngine.Camera _camera;
-        private CharacterMovementController _player;
+        private BaseCharacter _player;
 
         public Vector3 MovementDirection { get; private set; }
         
         protected void Awake()
         {
             _camera = UnityEngine.Camera.main;
-            _player = GetComponent<CharacterMovementController>();
+            _player = GetComponent<PlayerCharacter>();
         }
         protected void Update()
         {
