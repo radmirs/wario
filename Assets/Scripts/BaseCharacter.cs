@@ -20,17 +20,16 @@ namespace wario
         private IMovementDirectionSource _movementDirectionSource;
         private CharacterMovementController _characterMovementController;
         private ShootingController _shootingController;
-        public bool IsBoosted {get ; set; }
+        public bool IsBoosted {get ; set; }                                 //true когда игрок нажимает кнопку ускорения
 
-        private List<BaseBuff> _buffList = new List<BaseBuff>();
-        private List<BaseBuff> _buffListRemoveQueue = new List<BaseBuff>();
-        private List<BaseBuff> _buffListAddQueue = new List<BaseBuff>();
+        private List<BaseBuff> _buffList = new List<BaseBuff>();            // Список бафффов
+        private List<BaseBuff> _buffListRemoveQueue = new List<BaseBuff>(); // Очередь баффов на удаление
+        private List<BaseBuff> _buffListAddQueue = new List<BaseBuff>();    // Очередь на добавление
 
 
         protected void Awake()
         {
             _movementDirectionSource = GetComponent<IMovementDirectionSource>();
-
             _characterMovementController = GetComponent<CharacterMovementController>();
             _shootingController = GetComponent<ShootingController>();
         }
@@ -52,24 +51,26 @@ namespace wario
             _characterMovementController.MovementDirection = direction;
             _characterMovementController.LookDirection = lookDirection;
 
-            foreach(BaseBuff buff in _buffListRemoveQueue)
+            
+            //************** БЛОК РАБОТЫ С БАФФАМИ ПЕРСОНАЖА **************
+            foreach(BaseBuff buff in _buffListRemoveQueue)  // Удаляем баффы в очереди из списка
             {
                 buff.OnRemoval();
                 _buffList.Remove(buff);
             }
-            foreach(BaseBuff buff in _buffListAddQueue)
+            foreach(BaseBuff buff in _buffListAddQueue)     // Добавляем баффы в очереди в список
             {
                 _buffList.Add(buff);
                 buff.OnAddition();
             }
+            _buffListAddQueue.Clear();
+            _buffListRemoveQueue.Clear();                   // Чистим очереди
             foreach(BaseBuff buff in _buffList)
             {
-                buff.TimerIncrement(Time.deltaTime);
-                buff.Execute();
-            }
-            
-            _buffListAddQueue.Clear();
-            _buffListRemoveQueue.Clear();
+                buff.TimerIncrement(Time.deltaTime);        // Увеличиваем таймер каждого баффа
+                buff.Execute();                             // Бафф проверяет, не закончился ли он
+            }           
+            //************** КОНЕЦ БЛОКА **************
 
             if (_health <= 0f)
             {
@@ -103,20 +104,20 @@ namespace wario
         
         public void SetBuff(BaseBuff buff)
         {
-            foreach(BaseBuff item in _buffList)
+            foreach(BaseBuff item in _buffList)  
             {
-                if (item.bufftype == buff.bufftype)
+                if (item.bufftype == buff.bufftype)         // Проверяем наличия баффа в списке баффов
                 {
-                    _buffListRemoveQueue.Add(item);
+                    _buffListRemoveQueue.Add(item);         //Если уже есть такой, добавляем его в очередь на удаление
                 }
             }
 
-            _buffListAddQueue.Add(buff);
+            _buffListAddQueue.Add(buff);                    // Добавляем бафф в очередь на добавление
         }
 
         public void RemoveBuff(BaseBuff buff)
         {
-            _buffListRemoveQueue.Add(buff);
+            _buffListRemoveQueue.Add(buff);                 // Добавляем бафф в очередь на удаление
         }
 
     }

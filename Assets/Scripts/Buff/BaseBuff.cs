@@ -6,7 +6,7 @@ namespace wario.Buff
     {
         protected float _currentBuffTimerSeconds = 0f;
         protected float _buffDurationSeconds = 0f;
-        public string bufftype { get; protected set; }
+        public string bufftype { get; protected set; } // Нужно для проверки на наличие одинаковых баффов в BaseCharacter
 
         public void TimerSet(float buffDurationSeconds)
         {
@@ -19,20 +19,14 @@ namespace wario.Buff
             _currentBuffTimerSeconds += increment;
         }
 
-        public virtual void Execute()
-        {
-            
-        }
+        public virtual void Execute()       //Вызывается при каждом Update() из BaseCharacter
+        {}
 
-        public virtual void OnRemoval()
-        {
-            
-        }
+        public virtual void OnRemoval()     //Вызывается при удалении баффа
+        {}
 
-        public virtual void OnAddition()
-        {
-            
-        }
+        public virtual void OnAddition()    //Вызывается при добавлении баффа
+        {}
 
     }
 }

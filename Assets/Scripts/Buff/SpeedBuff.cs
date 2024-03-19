@@ -17,21 +17,22 @@ namespace wario.Buff
             TimerSet(boostTimeSeconds);
             _speedMultiplier = speedMultiplier;
         }
-        public override void Execute()
+        
+        public override void Execute()                                  //Вызывается при каждом Update() из BaseCharacter
         {
             if (_currentBuffTimerSeconds > _buffDurationSeconds)
                     {
-                        _character.RemoveBuff(this);
+                        _character.RemoveBuff(this);                    //Добавляется в очередь на удаление BaseCharacter'а
                     }
 
         }
         
-        public override void OnRemoval()
+        public override void OnRemoval()                                //Вызывается при удалении баффа
         {
             _characterMovementController.BuffSpeed(1f);
         }
 
-        public override void OnAddition()
+        public override void OnAddition()                               //Вызывается при добавлении баффа
         {
             _characterMovementController.BuffSpeed(_speedMultiplier);
         }
