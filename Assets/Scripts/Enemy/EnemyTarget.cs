@@ -1,4 +1,5 @@
 using UnityEngine;
+using wario.Movement;
 
 namespace wario.Enemy
 {
@@ -6,18 +7,25 @@ namespace wario.Enemy
     public class EnemyTarget
     {
         public GameObject Closest { get; private set; }
+        public bool IsScared { get; private set; } // Испуган ли персонаж
+        public bool IsWeaponUpgraded { get; set; } // Улучшено ли оружие
 
         private readonly Transform _agentTransform;
         private readonly float _viewRadius;
-        private readonly PlayerCharacter _player;
+        private PlayerCharacter _player;
 
         private readonly Collider[] _colliders = new Collider[10];
 
-        public EnemyTarget(Transform agent, PlayerCharacter player, float viewRadius)
+        public EnemyTarget(Transform agent, float viewRadius)
         {
             _agentTransform = agent;
-            _player = player;
+            _player = GameObject.FindObjectOfType<PlayerCharacter>();
             _viewRadius = viewRadius;
+        }
+
+        public void UpdatePlayer(PlayerCharacter character) // Переназначаем игрока
+        {
+            _player = character;
         }
 
         public void FindClosest()
@@ -39,7 +47,7 @@ namespace wario.Enemy
                 }
             }
 
-            if (_player != null && DistanceFromAgentTo(_player.gameObject) < minDistance)
+            if (_player != null && ( DistanceFromAgentTo(_player.gameObject) < minDistance ) || IsWeaponUpgraded ) // В случае, если оружие улучшено, ближайшей целью считается игрок
             {
                 Closest = _player.gameObject;
             }
@@ -53,6 +61,40 @@ namespace wario.Enemy
             }
 
             return 0;
+        }
+
+        public void CheckForEscape(float escapeTriggerHPTreshold, float escapeTriggerProbability, float scareSpeedBuff)  // Проверка на побег
+        {
+            var character = _agentTransform.GetComponent<BaseCharacter>();
+            var (maxHealth, health) = character.CheckHealth();                  // Узнаём текущее и максимальное здоровье
+            var movementController = 
+            _agentTransform.GetComponent<CharacterMovementController>();        // Получаем чтобы баффнуть скорость
+            if ( health / maxHealth <= escapeTriggerHPTreshold)                 // Если доля хп меньше пороговой
+            {
+                float diceRoll = Random.Range(0f, 1f);                          // Выбираем случайное число
+                if ( escapeTriggerProbability <= diceRoll)                      // Если вероятность побега меньше числа
+                {
+                    IsScared = true;                                            // Пугаемся
+                    movementController.BuffSpeed(scareSpeedBuff);               // Баффаем скорость
+                }
+            }
+
+            Vector3 playerPosition = _player.gameObject.transform.position;
+            Vector3 position = _agentTransform.position;
+            if ( ( playerPosition - position ).magnitude > _viewRadius)         // Если игрок вне зоны видимости
+            {
+                IsScared = false;                                               // Больше не боимся
+                movementController.BuffSpeed(1f);                               // Возвращаем нормальную скорость
+            }    
+        }
+        
+        public Vector3 FindEscape() // Используется в EnemyAiController
+        {
+            Vector3 playerPosition = _player.gameObject.transform.position;                     // Позиция игрока
+            Vector3 position = _agentTransform.position;                                        // Собственная позиция
+            Vector3 escape = position + (position - playerPosition).normalized * _viewRadius;   // Ищем дальнейшую точку от игрока в зоне видимости
+            
+            return escape;
         }
 
         private int FindAllTargets(int layerMask)

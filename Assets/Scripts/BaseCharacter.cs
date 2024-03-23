@@ -17,6 +17,8 @@ namespace wario
         private Transform _hand;
         [SerializeField]
         private float _health = 2f;
+        [SerializeField]
+        private float _maxHealth = 2f;
         private IMovementDirectionSource _movementDirectionSource;
         private CharacterMovementController _characterMovementController;
         private ShootingController _shootingController;
@@ -26,12 +28,20 @@ namespace wario
         private List<BaseBuff> _buffListRemoveQueue = new List<BaseBuff>(); // Очередь баффов на удаление
         private List<BaseBuff> _buffListAddQueue = new List<BaseBuff>();    // Очередь на добавление
 
+        public event Action<BaseCharacter> OnDeath;
+
+        public virtual void Die(BaseCharacter character)
+        {
+            OnDeath?.Invoke(this);
+            Destroy(gameObject);
+        }
 
         protected void Awake()
         {
             _movementDirectionSource = GetComponent<IMovementDirectionSource>();
             _characterMovementController = GetComponent<CharacterMovementController>();
             _shootingController = GetComponent<ShootingController>();
+            _health = _maxHealth;
         }
 
         protected void Start()
@@ -74,7 +84,7 @@ namespace wario
 
             if (_health <= 0f)
             {
-                Destroy(gameObject);
+                Die(this);
             }
         }
 
@@ -120,6 +130,10 @@ namespace wario
             _buffListRemoveQueue.Add(buff);                 // Добавляем бафф в очередь на удаление
         }
 
+        public (float, float) CheckHealth()
+        {
+            return (_maxHealth, _health);
+        }
     }
 
 }
