@@ -17,6 +17,7 @@ namespace wario.Enemy.States
         }
         public override void Execute()
         {
+            //Debug.Log("MoveForward");
             Vector3 targetPosition = _target.Closest.transform.position;
 
             if (_currentPoint != targetPosition)

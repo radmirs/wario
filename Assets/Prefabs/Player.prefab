@@ -365,6 +365,7 @@ MonoBehaviour:
   _baseWeaponPrefab: {fileID: 5028580281999556957, guid: 45f84655b85648541b4aecc8b477ffef, type: 3}
   _hand: {fileID: 9193591046564371848}
   _health: 100
+  _maxHealth: 100
 --- !u!1 &7986150521714624570
 GameObject:
   m_ObjectHideFlags: 0

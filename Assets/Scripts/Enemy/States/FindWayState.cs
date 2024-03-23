@@ -23,6 +23,7 @@ namespace wario.Enemy.States
 
         public override void Execute()
         {
+            //Debug.Log("FindWay");
             Vector3 targetPosition = _target.Closest.transform.position;
 
             if (!_navMesher.IsPathCalculated  || _navMesher.DistaceToTargetPointFrom(targetPosition) > MaxDistaceBetweenRealAndCalculated)

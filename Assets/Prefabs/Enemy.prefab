@@ -106,7 +106,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _baseWeaponPrefab: {fileID: 5028580281999556957, guid: 45f84655b85648541b4aecc8b477ffef, type: 3}
   _hand: {fileID: 4862993694446810212}
-  _health: 20
+  _health: 100
+  _maxHealth: 100
 --- !u!114 &2991894501521970263
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -132,6 +133,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _viewRadius: 20
+  _escapeTriggerHPTreshold: 0.3
+  _escapeTriggerProbability: 0.9
 --- !u!1 &4456159869917212985
 GameObject:
   m_ObjectHideFlags: 0
