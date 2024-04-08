@@ -5,6 +5,7 @@ using wario.PickUp;
 using wario.Buff;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace wario
 {
@@ -61,26 +62,7 @@ namespace wario
             _characterMovementController.MovementDirection = direction;
             _characterMovementController.LookDirection = lookDirection;
 
-            
-            //************** БЛОК РАБОТЫ С БАФФАМИ ПЕРСОНАЖА **************
-            foreach(BaseBuff buff in _buffListRemoveQueue)  // Удаляем баффы в очереди из списка
-            {
-                buff.OnRemoval();
-                _buffList.Remove(buff);
-            }
-            foreach(BaseBuff buff in _buffListAddQueue)     // Добавляем баффы в очереди в список
-            {
-                _buffList.Add(buff);
-                buff.OnAddition();
-            }
-            _buffListAddQueue.Clear();
-            _buffListRemoveQueue.Clear();                   // Чистим очереди
-            foreach(BaseBuff buff in _buffList)
-            {
-                buff.TimerIncrement(Time.deltaTime);        // Увеличиваем таймер каждого баффа
-                buff.Execute();                             // Бафф проверяет, не закончился ли он
-            }           
-            //************** КОНЕЦ БЛОКА **************
+            UpdateBuffs();
 
             if (_health <= 0f)
             {
@@ -133,6 +115,34 @@ namespace wario
         public (float, float) CheckHealth()
         {
             return (_maxHealth, _health);
+        }
+
+        public bool IsBuffed()
+        {
+            return _buffList.Any();
+        }
+
+        protected void UpdateBuffs()
+        {       
+            //************** БЛОК РАБОТЫ С БАФФАМИ ПЕРСОНАЖА **************
+            foreach(BaseBuff buff in _buffListRemoveQueue)  // Удаляем баффы в очереди из списка
+            {
+                buff.OnRemoval();
+                _buffList.Remove(buff);
+            }
+            foreach(BaseBuff buff in _buffListAddQueue)     // Добавляем баффы в очереди в список
+            {
+                _buffList.Add(buff);
+                buff.OnAddition();
+            }
+            _buffListAddQueue.Clear();
+            _buffListRemoveQueue.Clear();                   // Чистим очереди
+            foreach(BaseBuff buff in _buffList)
+            {
+                buff.TimerIncrement(Time.deltaTime);        // Увеличиваем таймер каждого баффа
+                buff.Execute();                             // Бафф проверяет, не закончился ли он
+            }           
+            //************** КОНЕЦ БЛОКА **************
         }
     }
 
