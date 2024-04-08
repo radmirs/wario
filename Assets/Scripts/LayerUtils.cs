@@ -15,7 +15,7 @@ namespace wario
         public static readonly int PickUpWeaponLayer = LayerMask.NameToLayer(PickUpWeaponLayerName);
         public static readonly int PickUpBoosterLayer = LayerMask.NameToLayer(PickUpBoosterLayerName);
         public static readonly int EnemyMask = LayerMask.GetMask(EnemyLayerName, PlayerLayerName);
-        public static readonly int PickUpsMask = LayerMask.GetMask(PickUpWeaponLayerName);
+        public static readonly int PickUpsMask = LayerMask.GetMask(PickUpWeaponLayerName, PickUpBoosterLayerName);
 
         public static bool IsBullet(GameObject other) => other.layer == BulletLayer;
         public static bool IsPickUp(GameObject other) => (other.layer == PickUpWeaponLayer | other.layer == PickUpBoosterLayer);
