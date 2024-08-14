@@ -29,6 +29,7 @@ namespace wario.Enemy
             _agentTransform.GetComponent<CharacterMovementController>();
 
             _character = _agentTransform.GetComponent<BaseCharacter>();  
+            IsWeaponUpgraded = false;
         }
 
        /* public void UpdatePlayer(PlayerCharacter character) // Переназначаем игрока
